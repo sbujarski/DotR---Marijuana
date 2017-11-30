@@ -1,9 +1,7 @@
 #Data on the Rocks
-#March 2017 #2
-
+#April 2017
 #Marijuana
 
-setwd("C:/Users/sbuja/Documents/Data on the Rocks/Marijuana")
 
 #REQUIRED PACKAGES
 library(xlsx) #package to import xls files directly
@@ -36,12 +34,14 @@ Fat.MVMD.W <- read.xlsx("C:/Users/sbuja/Documents/Data on the Rocks/Marijuana/Tr
 Fat.MVMD.W <- na.exclude(Fat.MVMD.W) #Delete blank row which is there for unexplained reason
 Sp.Desc(Fat.MVMD.W)
 dim(Fat.MVMD.W)
+write.csv(Fat.MVMD.W, "Fat.MVMD.W.csv", row.names=F)
 #13 states
 
 #Restructure from wide data frame to long
 Fat.MVMD.L <- gather(Fat.MVMD.W, State, Fat.MVMD, Colorado:Montana, factor_key=TRUE)
 Fat.MVMD.L
 Sp.Desc(Fat.MVMD.L)
+write.csv(Fat.MVMD.L, "Fat.MVMD.L.csv", row.names=F)
 
 #Code based on the criminalization status of marijuana
 #piecewise MLM 
@@ -68,6 +68,8 @@ for(i in 1:dim(Fat.MVMD.L)[1]){
 Fat.MVMD.L
 Fat.MVMD.L$YearSeg1.2 <- Fat.MVMD.L$YearSeg1^2
 Sp.Desc(Fat.MVMD.L)
+
+write.csv(Fat.MVMD.L, "Fat.MVMD.L.csv", row.names=F)
 
 Traffic.MLM <-  lme(Fat.MVMD~YearSeg1 + YearSeg1.2 + YearSeg2 + PrePost2013, 
                     data=Fat.MVMD.L, na.action=na.exclude,
@@ -166,13 +168,7 @@ Marijuana.plot <- ggplot(data=Fat.MVMD.L, aes(x=Year, y=Fat.MVMD, colour=State))
   stat_smooth(data=PredValues[4:5,], aes(x=Year, y=Fatalities), method = "lm", size = 3, se=F, colour="navyblue") + #Surround State Segment 2
   stat_smooth(data=PredValues[6:8,], aes(x=Year, y=Fatalities), method = "lm", formula = y ~ poly(x, 2), size = 3, se=F, colour="#089126") + #Surround State Segment 1 #Surround State Segment 1
   stat_smooth(data=PredValues[9:10,], aes(x=Year, y=Fatalities), method = "lm", size = 3, se=F, colour="#089126") + #Surround State Segment 2
-  #geom_line(data=PredValues[1:2,], aes(x=Year, y=Fatalities), colour="navyblue", size=3) + #Non-Decrim State Segment 1
-  #geom_line(data=PredValues[3:4,], aes(x=Year, y=Fatalities), colour="navyblue", size=3) + #Non-Decrim State Segment 2
-  #geom_line(data=PredValues[5:6,], aes(x=Year, y=Fatalities), colour="#089126", size=3) + #Decrim State Segment 1
-  #geom_line(data=PredValues[7:8,], aes(x=Year, y=Fatalities), colour="#089126", size=3) + #Decrim State Segment 2
   geom_text(data=Fat.MVMD.2015, aes(x=X, y=Fat.MVMD, label=St.Abr), size=4, fontface="bold") +
-  #geom_point(data=Fat.MVMD.W, aes(x=Year, y=ND.Average), size=3, colour="navyblue") + #double checking piecewise regression
-  #geom_point(data=Fat.MVMD.W, aes(x=Year, y=D.Average), size=3, colour="#089126") + #double checking piecewise regression
   annotate("text", label="Before\nLegalization", x=2011.4, y=2.3, colour="grey50", size=6, fontface="bold", hjust=.5, vjust=.5) + 
   annotate("text", label="After\nLegalization", x=2014.6, y=2.3, colour="grey50", size=6, fontface="bold", hjust=.5, vjust=.5) + 
   annotate("rect", fill="white", alpha=.8, xmin = 2009.4, xmax = 2012.6, ymin = 1.53, ymax = 1.67) +
@@ -186,6 +182,9 @@ Marijuana.plot <- ggplot(data=Fat.MVMD.L, aes(x=Year, y=Fat.MVMD, colour=State))
 Marijuana.plot
 #guides(colour = guide_legend(override.aes = list(size=4, alpha=1)))
 ggsave(Marijuana.plot, filename="Marijuana.plot.Final.png", width = 8, height=7, dpi=500)
+
+
+
 
 #Explore with all states----
 #All States
